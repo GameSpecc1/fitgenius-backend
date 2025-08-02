@@ -17,6 +17,7 @@ import {
   BotMessageSquare,
   Calculator,
   Camera,
+  CreditCard,
   Dumbbell,
   Goal,
   LayoutDashboard,
@@ -33,6 +34,7 @@ const menuItems = [
   { href: "/goal-tracker", label: "Goal Tracker", icon: Goal },
   { href: "/macro-tracker", label: "Macro Tracker", icon: Calculator },
   { href: "/equipment-identifier", label: "Equipment ID", icon: Camera },
+  { href: "/billing", label: "Billing", icon: CreditCard },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
