@@ -1,12 +1,7 @@
 // src/lib/stripe.ts
 'use server';
 
-import Stripe from 'stripe';
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-  typescript: true,
-});
+import { stripe } from './stripe-client';
 
 export async function createStripeCheckoutSession(userId: string, userEmail: string) {
   const priceId = process.env.STRIPE_PRO_PRICE_ID;
