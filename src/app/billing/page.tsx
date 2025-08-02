@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { CreditCard, Download, ExternalLink } from "lucide-react";
 
 const invoices = [
-  { id: "INV001", date: "2023-10-01", amount: "$20.00", status: "Paid" },
-  { id: "INV002", date: "2023-09-01", amount: "$20.00", status: "Paid" },
-  { id: "INV003", date: "2023-08-01", amount: "$20.00", status: "Paid" },
+  { id: "INV001", date: "2023-10-01", amount: "£2.50", status: "Paid" },
+  { id: "INV002", date: "2023-09-01", amount: "£2.50", status: "Paid" },
+  { id: "INV003", date: "2023-08-01", amount: "£2.50", status: "Paid" },
 ];
 
 const StripeIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -51,7 +51,7 @@ export default function BillingPage() {
                   <h3 className="text-lg font-semibold">FitGenius Pro</h3>
                   <p className="text-sm text-muted-foreground">Billed monthly</p>
                 </div>
-                <p className="text-2xl font-bold">$20/month</p>
+                <p className="text-2xl font-bold">£2.50/month</p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">Your plan includes access to all AI features, unlimited workout plans, and premium support.</p>
