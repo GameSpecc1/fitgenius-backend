@@ -111,7 +111,7 @@ export default function BillingPage() {
                 </div>
                 <Button className="w-full" onClick={handleManageSubscription} disabled={isLoading}>
                     <ExternalLink className="mr-2"/>
-                    Manage payment on Stripe
+                    Manage Payments
                 </Button>
             </CardContent>
         </Card>
@@ -157,5 +157,3 @@ export default function BillingPage() {
     </div>
   );
 }
-
-    
