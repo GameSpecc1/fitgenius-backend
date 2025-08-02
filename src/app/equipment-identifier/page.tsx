@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState, useRef } from "react";
-import { Camera, Upload, Loader2 } from "lucide-react";
+import { Camera, Upload, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { identifyEquipment, type IdentifyEquipmentOutput } from "@/ai/flows/identify-equipment";
@@ -9,8 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function EquipmentIdentifierPage() {
+  // TODO: Replace with actual user subscription status
+  const [isPro, setIsPro] = useState(false);
+
   const [result, setResult] = useState<IdentifyEquipmentOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -78,6 +83,33 @@ export default function EquipmentIdentifierPage() {
       handleFileChange(e.dataTransfer.files[0]);
     }
   };
+
+  if (!isPro) {
+    return (
+        <div className="space-y-8">
+            <header className="space-y-2">
+                <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tighter font-headline text-primary">
+                <Camera /> Equipment Identifier
+                </h1>
+                <p className="text-muted-foreground">Upload a picture of gym equipment to learn what it is and how to use it.</p>
+            </header>
+            <Card className="flex flex-col items-center justify-center p-12 text-center">
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-center gap-2">
+                        <Sparkles className="text-primary" />
+                        This is a Pro Feature
+                    </CardTitle>
+                    <CardDescription>Upgrade to FitGenius Pro to unlock the Equipment Identifier and other exclusive features.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Link href="/billing">
+                        <Button>Upgrade to Pro</Button>
+                    </Link>
+                </CardContent>
+            </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

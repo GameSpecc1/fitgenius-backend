@@ -3,18 +3,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { CreditCard, Download, ExternalLink, Loader2 } from "lucide-react";
-import { createStripeCheckoutSession } from "@/lib/stripe";
+import { CreditCard, ExternalLink, Loader2 } from "lucide-react";
+import { createStripeCheckoutSession, createStripePortalSession } from "@/lib/stripe";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-const invoices = [
-  { id: "INV001", date: "2023-10-01", amount: "£2.50", status: "Paid" },
-  { id: "INV002", date: "2023-09-01", amount: "£2.50", status: "Paid" },
-  { id: "INV003", date: "2023-08-01", amount: "£2.50", status: "Paid" },
-];
+// TODO: Replace with actual user subscription status and data
+const FAKE_USER_ID = "user_id_123";
+const FAKE_USER_EMAIL = "user@example.com";
+const FAKE_USER_IS_PRO = false;
+const FAKE_STRIPE_CUSTOMER_ID = "cus_XXXXXXXXXXXXXX"; // Replace with a real customer ID for testing portal
 
 const VisaIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 12" fill="none" {...props}>
@@ -40,12 +38,14 @@ const VisaIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function BillingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
+    
+    // In a real app, this would come from your user authentication state
+    const isProUser = FAKE_USER_IS_PRO;
 
-    const handleManageSubscription = async () => {
+    const handleGetPro = async () => {
         setIsLoading(true);
         try {
-            // NOTE: Replace with actual user data
-            const { url } = await createStripeCheckoutSession("user_id_123", "user@example.com");
+            const { url } = await createStripeCheckoutSession(FAKE_USER_ID, FAKE_USER_EMAIL);
             if (url) {
                 window.location.href = url;
             }
@@ -59,6 +59,24 @@ export default function BillingPage() {
             setIsLoading(false);
         }
     }
+    
+    const handleManageSubscription = async () => {
+        setIsLoading(true);
+        try {
+            const { url } = await createStripePortalSession(FAKE_STRIPE_CUSTOMER_ID);
+            if (url) {
+                window.location.href = url;
+            }
+        } catch (error) {
+            console.error("Error creating stripe portal session:", error);
+            toast({
+                title: "Error",
+                description: "Could not open customer portal. Please try again.",
+                variant: "destructive",
+            });
+            setIsLoading(false);
+        }
+    }
 
   return (
     <div className="space-y-8">
@@ -67,7 +85,7 @@ export default function BillingPage() {
           <CreditCard /> Billing
         </h1>
         <p className="text-muted-foreground">
-          Manage your subscription and view your billing history. Payments are securely handled by Stripe.
+          Manage your subscription and payment details. Payments are securely handled by Stripe.
         </p>
       </header>
 
@@ -75,26 +93,37 @@ export default function BillingPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Current Plan</CardTitle>
-            <CardDescription>You are currently on the Pro plan.</CardDescription>
+            <CardDescription>You are currently on the {isProUser ? 'Pro' : 'Free'} plan.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-6 rounded-lg bg-muted">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold">FitGenius Pro</h3>
-                  <p className="text-sm text-muted-foreground">Billed monthly</p>
+                  <h3 className="text-lg font-semibold">{isProUser ? 'FitGenius Pro' : 'FitGenius Free'}</h3>
+                  <p className="text-sm text-muted-foreground">{isProUser ? 'Billed monthly' : 'Upgrade for premium features'}</p>
                 </div>
-                <p className="text-2xl font-bold">£2.50/month</p>
+                <p className="text-2xl font-bold">{isProUser ? '£2.50/month' : '£0.00/month'}</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">Your plan includes access to all AI features, unlimited workout plans, and premium support.</p>
+            <p className="text-sm text-muted-foreground">
+                {isProUser 
+                    ? 'Your plan includes access to all AI features, unlimited workout plans, and premium support.' 
+                    : 'The free plan includes access to core features. Upgrade to Pro for unlimited access.'
+                }
+            </p>
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleManageSubscription} disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 animate-spin" />}
-                Manage Plan on Stripe
-            </Button>
-            <Button variant="destructive" onClick={handleManageSubscription} disabled={isLoading}>Cancel on Stripe</Button>
+            {isProUser ? (
+                 <Button onClick={handleManageSubscription} disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 animate-spin" />}
+                    Manage Plan
+                </Button>
+            ) : (
+                <Button onClick={handleGetPro} disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 animate-spin" />}
+                    Upgrade to Pro
+                </Button>
+            )}
           </CardFooter>
         </Card>
 
@@ -109,51 +138,14 @@ export default function BillingPage() {
                     <MastercardIcon className="w-10 h-auto" />
                     <AmexIcon className="w-10 h-auto" />
                 </div>
-                <Button className="w-full" onClick={handleManageSubscription} disabled={isLoading}>
+                <Button className="w-full" onClick={isProUser ? handleManageSubscription : handleGetPro} disabled={isLoading}>
                     <ExternalLink className="mr-2"/>
-                    Manage Payments
+                    {isProUser ? 'Manage Payments' : 'Provide Payment Details'}
                 </Button>
             </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Billing History</CardTitle>
-          <CardDescription>View and download your past invoices from Stripe.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice ID</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((invoice) => (
-                <TableRow key={invoice.id}>
-                  <TableCell className="font-medium">{invoice.id}</TableCell>
-                  <TableCell>{invoice.date}</TableCell>
-                  <TableCell>{invoice.amount}</TableCell>
-                  <TableCell>
-                    <Badge variant={invoice.status === "Paid" ? "default" : "secondary"}>{invoice.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <Download className="w-4 h-4" />
-                      <span className="sr-only">Download invoice</span>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
   );
 }
+

@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calculator, Loader2 } from "lucide-react";
+import { Calculator, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { generateMacroRecommendations, type MacroRecommendationsOutput } from "@/ai/flows/generate-macro-recommendations";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const formSchema = z.object({
   weight: z.coerce.number().positive(),
@@ -24,6 +26,9 @@ const formSchema = z.object({
 });
 
 export default function MacroTrackerPage() {
+  // TODO: Replace with actual user subscription status
+  const [isPro, setIsPro] = useState(false);
+
   const [recommendations, setRecommendations] = useState<MacroRecommendationsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,6 +54,33 @@ export default function MacroTrackerPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (!isPro) {
+    return (
+        <div className="space-y-8">
+            <header className="space-y-2">
+                <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tighter font-headline text-primary">
+                    <Calculator /> Macro Calculator
+                </h1>
+                <p className="text-muted-foreground">Get personalized macronutrient and calorie recommendations from our AI.</p>
+            </header>
+            <Card className="flex flex-col items-center justify-center p-12 text-center">
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-center gap-2">
+                        <Sparkles className="text-primary" />
+                        This is a Pro Feature
+                    </CardTitle>
+                    <CardDescription>Upgrade to FitGenius Pro to unlock the Macro Tracker and other exclusive features.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Link href="/billing">
+                        <Button>Upgrade to Pro</Button>
+                    </Link>
+                </CardContent>
+            </Card>
+      </div>
+    );
   }
 
   return (

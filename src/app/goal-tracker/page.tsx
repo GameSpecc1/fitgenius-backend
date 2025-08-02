@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 interface Goal {
   id: string;
@@ -24,6 +25,9 @@ interface Goal {
   current: number;
   unit: string;
 }
+
+// TODO: Replace with actual user ID
+const FAKE_USER_ID = "user_id_123";
 
 export default function GoalTrackerPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -34,6 +38,7 @@ export default function GoalTrackerPage() {
   const [target, setTarget] = useState("");
   const [current, setCurrent] = useState("");
   const [unit, setUnit] = useState("");
+  const { toast } = useToast();
 
   const resetForm = () => {
     setTitle("");
@@ -57,10 +62,14 @@ export default function GoalTrackerPage() {
   };
 
   const handleSaveGoal = () => {
-    if (!title || !target || !current || !unit) return;
+    if (!title || !target || !current || !unit) {
+        toast({ title: "Missing fields", description: "Please fill out all fields.", variant: "destructive" });
+        return;
+    };
 
     if (editingGoal) {
       setGoals(goals.map(g => g.id === editingGoal.id ? { ...g, title, target: +target, current: +current, unit } : g));
+      toast({ title: "Goal Updated", description: "Your goal has been successfully updated." });
     } else {
       const newGoal: Goal = {
         id: new Date().toISOString(),
@@ -70,6 +79,7 @@ export default function GoalTrackerPage() {
         unit,
       };
       setGoals([newGoal, ...goals]);
+      toast({ title: "Goal Set", description: "Your new goal has been successfully set." });
     }
     
     resetForm();
@@ -78,6 +88,7 @@ export default function GoalTrackerPage() {
 
   const handleDeleteGoal = (id: string) => {
     setGoals(goals.filter(g => g.id !== id));
+    toast({ title: "Goal Deleted", description: "Your goal has been deleted." });
   };
   
   return (

@@ -4,6 +4,13 @@ import {headers} from 'next/headers';
 import type Stripe from 'stripe';
 import {stripe} from '@/lib/stripe-client';
 
+// NOTE: This is a placeholder for your user service.
+// In a real application, you would import a function to update the user's pro status in your database.
+const grantProAccess = async (customerId: string, userId: string) => {
+  console.log(`Granting pro access to userId: ${userId} with customerId: ${customerId}`);
+  // Example: await db.users.update({ where: { id: userId }, data: { isPro: true, stripeCustomerId: customerId } });
+};
+
 // Disable the default body parser for this route
 export const config = {
   api: {
@@ -44,17 +51,31 @@ export async function POST(req: NextRequest) {
     case 'checkout.session.completed':
       const session = event.data.object as Stripe.Checkout.Session;
       console.log(`Payment successful for session: ${session.id}`);
-      // Here you would typically:
-      // 1. Retrieve the user ID from session.metadata.userId
-      // 2. Look up the user in your database
-      // 3. Update the user's record to grant them Pro access and store the customer ID (session.customer)
+
+      const { userId } = session.metadata || {};
+      const customerId = session.customer as string;
+
+      if (!userId || !customerId) {
+        console.error("Missing userId or customerId in checkout session metadata");
+        return NextResponse.json({ error: "Missing user information in session." }, { status: 400 });
+      }
+
+      // Grant pro access to the user
+      await grantProAccess(customerId, userId);
+      
       break;
     // Add other event types to handle here (e.g., subscription updates, cancellations)
     case 'customer.subscription.deleted':
       // Handle subscription cancellation
+      const subscriptionDeleted = event.data.object as Stripe.Subscription;
+      console.log(`Subscription cancelled: ${subscriptionDeleted.id}`);
+      // Here you would revoke Pro access from the user associated with subscriptionDeleted.customer
       break;
     case 'customer.subscription.updated':
       // Handle subscription updates
+      const subscriptionUpdated = event.data.object as Stripe.Subscription;
+      console.log(`Subscription updated: ${subscriptionUpdated.id}`);
+      // Handle changes in subscription status, e.g., if a payment fails.
       break;
     default:
       console.log(`Unhandled event type ${event.type}`);

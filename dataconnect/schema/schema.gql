@@ -1,52 +1,29 @@
-type User @table {
-  username: String!
-  email: String!
-  createdAt: Timestamp!
-  displayName: String
-  photoUrl: String
-  weight: Float
-  fitnessGoals: String
+
+type User @table(name: "Users") {
+  id: String! @pk
+  name: String
+  email: String! @unique
+  workouts: [Workout] @map(from: "id", to: "userId")
+  goals: [Goal] @map(from: "id", to: "userId")
 }
 
-type Exercise @table {
-  name: String!
-  muscleGroup: String!
-  createdAt: Timestamp!
-  description: String
-  instructions: String
-  equipment: String
-}
-
-type Routine @table {
-  user: User!
-  name: String!
-  createdAt: Timestamp!
-  description: String
-}
-
-type RoutineExercise @table(key: ["routine", "exercise"]) {
-  routine: Routine!
-  exercise: Exercise!
-  order: Int!
-  sets: Int
-  reps: Int
-}
-
-type WorkoutSession @table {
-  user: User!
-  routine: Routine
-  workoutDate: Date!
-  createdAt: Timestamp!
-  durationMinutes: Int
-  notes: String
-}
-
-type WorkoutSet @table {
-  workoutSession: WorkoutSession!
-  exercise: Exercise!
-  setNumber: Int!
+type Workout @table(name: "Workouts") {
+  id: String! @pk
+  userId: String!
+  date: Timestamp!
+  exercise: String!
+  sets: Int!
   reps: Int!
-  weightKg: Float!
-  createdAt: Timestamp!
-  notes: String
+  weight: Float!
+  user: User! @map(from: "userId", to: "id")
+}
+
+type Goal @table(name: "Goals") {
+  id: String! @pk
+  userId: String!
+  title: String!
+  target: Float!
+  current: Float!
+  unit: String!
+  user: User! @map(from: "userId", to: "id")
 }

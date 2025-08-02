@@ -9,7 +9,7 @@
   },
   "firestore": {
     "database": "(default)",
-    "location": "europe-west2",
+    "location": "europe-west4",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -37,15 +37,39 @@
       ]
     }
   ],
-  "apphosting": {
-    "backendId": "fitnessgenie-backend",
-    "rootDir": "y",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "functions"
-    ]
-  }
+  "apphosting": [
+    {
+      "backendId": "fitnessgenie-backend",
+      "rootDir": "y",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ]
+    },
+    {
+      "backendId": "fitnessgenie-backend",
+      "rootDir": "/",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ]
+    },
+    {
+      "backendId": "fitnessgenie-backend",
+      "rootDir": "y",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "functions"
+      ]
+    }
+  ]
 }

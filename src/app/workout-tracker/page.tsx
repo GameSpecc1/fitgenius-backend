@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { PlusCircle, NotebookText } from "lucide-react";
+import { PlusCircle, NotebookText, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface Workout {
   id: string;
@@ -26,35 +27,71 @@ interface Workout {
   weight: number;
 }
 
+// TODO: Replace with actual data fetching and mutations from Data Connect
+const FAKE_USER_ID = 'user_id_123';
+
 export default function WorkoutTrackerPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingWorkout, setEditingWorkout] = useState<Workout | null>(null);
 
   const [exercise, setExercise] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const { toast } = useToast();
 
-  const handleAddWorkout = () => {
-    if (!exercise || !sets || !reps || !weight) return;
-
-    const newWorkout: Workout = {
-      id: new Date().toISOString(),
-      date: new Date(),
-      exercise,
-      sets: parseInt(sets),
-      reps: parseInt(reps),
-      weight: parseInt(weight),
-    };
-    setWorkouts([newWorkout, ...workouts]);
-    
-    // Reset form and close dialog
+  const resetForm = () => {
     setExercise("");
     setSets("");
     setReps("");
     setWeight("");
+    setEditingWorkout(null);
+  }
+
+  const handleOpenDialog = (workout: Workout | null = null) => {
+    if (workout) {
+      setEditingWorkout(workout);
+      setExercise(workout.exercise);
+      setSets(String(workout.sets));
+      setReps(String(workout.reps));
+      setWeight(String(workout.weight));
+    } else {
+      resetForm();
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveWorkout = () => {
+    if (!exercise || !sets || !reps || !weight) {
+        toast({ title: "Missing fields", description: "Please fill out all fields.", variant: "destructive" });
+        return;
+    };
+
+    if (editingWorkout) {
+      setWorkouts(workouts.map(w => w.id === editingWorkout.id ? { ...w, exercise, sets: +sets, reps: +reps, weight: +weight } : w));
+      toast({ title: "Workout Updated", description: "Your workout has been successfully updated." });
+    } else {
+        const newWorkout: Workout = {
+            id: new Date().toISOString(),
+            date: new Date(),
+            exercise,
+            sets: parseInt(sets),
+            reps: parseInt(reps),
+            weight: parseInt(weight),
+          };
+          setWorkouts([newWorkout, ...workouts]);
+          toast({ title: "Workout Logged", description: "Your new workout has been successfully logged." });
+    }
+    
+    resetForm();
     setIsDialogOpen(false);
   };
+
+  const handleDeleteWorkout = (id: string) => {
+    setWorkouts(workouts.filter(w => w.id !== id));
+    toast({ title: "Workout Deleted", description: "Your workout has been deleted." });
+  }
 
   return (
     <div className="space-y-8">
@@ -69,16 +106,16 @@ export default function WorkoutTrackerPage() {
 
        
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => handleOpenDialog()}>
               <PlusCircle className="w-4 h-4 mr-2" />
               Log Workout
             </Button>
           </DialogTrigger>
          
       </div>
-       <DialogContent>
+       <DialogContent onInteractOutside={resetForm} onEscapeKeyDown={resetForm}>
             <DialogHeader>
-              <DialogTitle>Log a New Workout</DialogTitle>
+              <DialogTitle>{editingWorkout ? 'Edit Workout' : 'Log a New Workout'}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid items-center grid-cols-4 gap-4">
@@ -100,9 +137,9 @@ export default function WorkoutTrackerPage() {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" onClick={resetForm}>Cancel</Button>
               </DialogClose>
-              <Button onClick={handleAddWorkout}>Save Workout</Button>
+              <Button onClick={handleSaveWorkout}>Save Workout</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -139,6 +176,10 @@ export default function WorkoutTrackerPage() {
                   </div>
                 </div>
               </CardContent>
+              <CardFooter className="justify-end gap-2">
+                <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(workout)}><Edit className="w-4 h-4" /></Button>
+                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => handleDeleteWorkout(workout.id)}><Trash2 className="w-4 h-4" /></Button>
+              </CardFooter>
             </Card>
           ))
         )}
