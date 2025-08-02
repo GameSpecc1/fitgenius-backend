@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Download, ExternalLink } from "lucide-react";
+import { CreditCard, Download, ExternalLink, Loader2 } from "lucide-react";
+import { createStripeCheckoutSession } from "@/lib/stripe";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const invoices = [
   { id: "INV001", date: "2023-10-01", amount: "£2.50", status: "Paid" },
@@ -27,6 +30,28 @@ const StripeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   );
 
 export default function BillingPage() {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+
+    const handleManageSubscription = async () => {
+        setIsLoading(true);
+        try {
+            // NOTE: Replace with actual user data
+            const { url } = await createStripeCheckoutSession("user_id_123", "user@example.com");
+            if (url) {
+                window.location.href = url;
+            }
+        } catch (error) {
+            console.error("Error creating stripe session:", error);
+            toast({
+                title: "Error",
+                description: "Could not redirect to Stripe. Please try again.",
+                variant: "destructive",
+            });
+            setIsLoading(false);
+        }
+    }
+
   return (
     <div className="space-y-8">
       <header className="space-y-2">
@@ -57,8 +82,11 @@ export default function BillingPage() {
             <p className="text-sm text-muted-foreground">Your plan includes access to all AI features, unlimited workout plans, and premium support.</p>
           </CardContent>
           <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline">Manage Plan on Stripe</Button>
-            <Button variant="destructive">Cancel on Stripe</Button>
+            <Button variant="outline" onClick={handleManageSubscription} disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 animate-spin" />}
+                Manage Plan on Stripe
+            </Button>
+            <Button variant="destructive" onClick={handleManageSubscription} disabled={isLoading}>Cancel on Stripe</Button>
           </CardFooter>
         </Card>
 
@@ -71,7 +99,7 @@ export default function BillingPage() {
             <div className="flex items-center justify-center gap-4 p-4 rounded-lg bg-muted">
               <StripeIcon className="w-24" />
             </div>
-            <Button className="w-full">
+            <Button className="w-full" onClick={handleManageSubscription} disabled={isLoading}>
                 <ExternalLink className="mr-2"/>
                 Manage payment on Stripe
             </Button>
