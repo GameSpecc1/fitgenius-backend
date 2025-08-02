@@ -3,6 +3,8 @@
 
 import { stripe } from './stripe-client';
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+
 export async function createStripeCheckoutSession(userId: string, userEmail: string) {
   const priceId = process.env.STRIPE_PRO_PRICE_ID;
   
@@ -23,8 +25,8 @@ export async function createStripeCheckoutSession(userId: string, userEmail: str
     metadata: {
       userId,
     },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
+    success_url: `${APP_URL}/billing?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${APP_URL}/billing`,
   });
 
   return { sessionId: session.id, url: session.url };
@@ -33,7 +35,7 @@ export async function createStripeCheckoutSession(userId: string, userEmail: str
 export async function createStripePortalSession(customerId: string) {
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
+    return_url: `${APP_URL}/billing`,
   });
 
   return { url: portalSession.url };
