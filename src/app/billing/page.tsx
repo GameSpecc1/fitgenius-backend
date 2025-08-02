@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -15,17 +16,24 @@ const invoices = [
   { id: "INV003", date: "2023-08-01", amount: "£2.50", status: "Paid" },
 ];
 
-const StripeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg
-      viewBox="0 0 84 36"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path
-        d="M21.82 20.31c0-1.12.42-2.11,1.13-2.88.7-.77,1.64-1.21,2.74-1.21,1.52,0,2.69.74,3.53,2.02l-2.6,1.54c-.26-.4-.6-.7-1.02-.7-.52,0-.94.3-1.16.82-.22.52-.33,1.13-.33,1.83,0,.7.11,1.31.33,1.83.22.52.64.78,1.16.78.42,0,.76-.3,1.02-.7l2.6,1.54c-.84,1.28-2.01,2.02-3.53,2.02-1.1,0-2.04-.44-2.74-1.21-.71-.78-1.13-1.76-1.13-2.88Zm16.32,2.83c.48-.68.73-1.52.73-2.5,0-1.3-.4-2.38-1.2-3.23-.8-.85-1.9-1.28-3.32-1.28-1.09,0-2.04.38-2.83,1.1L34,15.22c.38-.34.82-.5,1.34-.5.84,0,1.45.49,1.8,1.48h-3.4v2.7h5.36c0,.18,0,.35-.04.53-.2,1.38-.8,2.48-1.8,3.3-.98.82-2.26,1.24-3.83,1.24-1.32,0-2.47-.45-3.42-1.36s-1.43-2.2-1.43-3.88c0-1.7.53-3,1.6-3.9,1.06-.9,2.48-1.36,4.22-1.36,1.12,0,2.1.28,2.94.84l1.9-2.2c-1.1-.8-2.5-1.2-4.2-1.2-2.18,0-3.95.73-5.32,2.2-1.37,1.46-2.05,3.44-2.05,5.92,0,2.52.73,4.48,2.2,5.88,1.47,1.4,3.3,2.09,5.5,2.09,2.08,0,3.75-.62,4.98-1.87,1.23-1.24,1.9-2.9,1.9-4.98,0-.73-.13-1.4-.4-2.02h-4.32v-3.32h.2Zm17.84-2.83c0-1.48-.4-2.7-1.18-3.66-.78-.96-1.8-1.44-3.04-1.44-1.18,0-2.18.49-3,1.48l2.22,1.64c.34-.44.73-.66,1.18-.66.52,0,.92.27,1.2.8.28.53.42,1.2.42,2,0,.8-.14,1.47-.42,2-.28.53-.68.8-1.2.8-.44,0-.84-.22-1.18-.66L50.4,26.4c.82,1,1.82,1.48,3,1.48,1.24,0,2.26-.48,3.04-1.44.78-.96,1.18-2.18,1.18-3.66ZM82.02,7.34h-2.52v20.9h2.52V7.34Zm-5.72,0H73.78l-5.3,13.2-5.3-13.2h-2.52l7.1,17.44-2.1,3.46h2.82l.8-1.34h5.62l3.4,4.8h2.92l-5.7-8.12,7.2-16.24ZM19.25,23.3v-16h3.42c1.7,0,3.03.44,4,1.3.95.88,1.43,2.12,1.43,3.74,0,1.3-.34,2.4-.9,3.25-.54.85-1.3,1.42-2.28,1.72l4.4,5.98h-3.42l-3.9-5.48h-1.32v5.48h-2.02V23.3Zm0,0h2.02v-5.48h1.32c1.4,0,2.5-.4,3.3-1.2s1.2-1.88,1.2-3.24c0-1.1-.3-2.02-.9-2.76s-1.4-.9-2.5-.9h-2.42v13.58h-.02Z"
-        fill="#635BFF"
-      ></path>
+const VisaIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 12" fill="none" {...props}>
+      <path d="M2.755 11.536h-2.43l3.19-11.072h2.43l-3.19 11.072zm12.338 0h2.43l3.19-11.072h-2.43l-3.19 11.072zm-4.71-5.182l.53-1.83h.01a6.382 6.382 0 0 1 2.5-2.06c.26-.1.54-.15.82-.15.22 0 .4.04.53.11l.36 2.37c-.12-.04-.26-.08-.42-.08-.32 0-.6.1-.82.28-.22.18-.38.43-.48.74l-.65 2.14h2.5l-.26 1.48h-2.5l-.92 3.201h-2.43l3.19-11.07h2.43l-.36 2.06h-2.1l-.22 1.34zm6.09-.01l.53-1.83h.01a6.382 6.382 0 0 1 2.5-2.06c.26-.1.54-.15.82-.15.22 0 .4.04.53.11l.36 2.37c-.12-.04-.26-.08-.42-.08-.32 0-.6.1-.82.28-.22.18-.38.43-.48.74l-.65 2.14h2.5l-.26 1.48h-2.5l-.92 3.201h-2.43l3.19-11.07h2.43l-.36 2.06h-2.1l-.22 1.34zm-9.362-3.118c-.1-.3-.15-.6-.15-.88a2.53 2.53 0 0 1 .42-1.46c.28-.4.67-.6 1.18-.6.55 0 .98.2 1.28.6.3.4.45.9.45 1.54 0 .3-.04.6-.11.9l-3.07-.1zm.77 8.018h2.48l3.19-11.07h-2.43l-3.24 11.07zm14.868-6.068l.42-1.34c.14-.42.22-.8.22-1.12 0-.5-.13-.9-.4-1.22a1.605 1.605 0 0 0-1.18-.48c-.53 0-1.01.15-1.44.45l.8 2.14c.12-.12.26-.18.42-.18.2 0 .35.08.45.25.1.17.15.38.15.65 0 .2-.04.4-.11.6l-2.03 6.16h2.43l3.19-11.07h-2.43l-.47 4.02z" fill="#fff"/>
+    </svg>
+  );
+  
+  const MastercardIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 24" fill="none" {...props}>
+      <circle cx="12" cy="12" r="12" fill="#EA001B"/>
+      <circle cx="26" cy="12" r="12" fill="#F79E1B" fillOpacity="0.8"/>
+    </svg>
+  );
+  
+  const AmexIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 24" fill="none" {...props}>
+      <rect width="38" height="24" rx="3" fill="#006FCF"/>
+      <rect x="13" y="9" width="12" height="6" fill="#fff"/>
+      <path d="M19.64 11.13h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm11.5 2.3h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74zm-2.3 0h-1.3v1.74h1.3v-1.74z" fill="#006FCF"/>
     </svg>
   );
 
@@ -91,19 +99,21 @@ export default function BillingPage() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Payment Method</CardTitle>
-            <CardDescription>Powered by Stripe.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-center gap-4 p-4 rounded-lg bg-muted">
-              <StripeIcon className="w-24" />
-            </div>
-            <Button className="w-full" onClick={handleManageSubscription} disabled={isLoading}>
-                <ExternalLink className="mr-2"/>
-                Manage payment on Stripe
-            </Button>
-          </CardContent>
+            <CardHeader>
+                <CardTitle>Payment Method</CardTitle>
+                <CardDescription>Powered by Stripe.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-center gap-4 p-4 rounded-lg bg-muted">
+                    <VisaIcon className="w-10 h-auto" />
+                    <MastercardIcon className="w-10 h-auto" />
+                    <AmexIcon className="w-10 h-auto" />
+                </div>
+                <Button className="w-full" onClick={handleManageSubscription} disabled={isLoading}>
+                    <ExternalLink className="mr-2"/>
+                    Manage payment on Stripe
+                </Button>
+            </CardContent>
         </Card>
       </div>
 
@@ -147,3 +157,5 @@ export default function BillingPage() {
     </div>
   );
 }
+
+    
